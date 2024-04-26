@@ -2,23 +2,21 @@
   <div class="container my-2 p-1">
     <h2 class="text-center">Tasks</h2>
     <div class="list" v-if="tasks.length">
-      <v-container
+      <v-container 
         v-for="{ id, description, completed } in tasks"
         :key="id"
         class="d-flex justify-space-between bg-black my-1 item"
       >
-        <div :class="{ completed: completed }" @click='updateTaskCompletion(id)' class="mx-2 cursor-pointer">
+          <div :class="{ completed: completed }" @click='updateTaskCompletion(id)' class="mx-2 cursor-pointer">
           {{ description }}
         </div>
         <div>
-          <RouterLink :to="'/editTask?taskID=' + id">
-            <v-icon>{{ mdiPencil }}</v-icon>
+          <RouterLink class="mx-3" :to="'/editTask?taskID=' + id">
+            <svg-icon type="mdi" :path="mdiPencil"></svg-icon>
           </RouterLink>
-          <v-btn @click="deleteTask(id)" color="red-darken-1"> Delete </v-btn>
+           <svg-icon @click="deleteTask(id)" type="mdi" :path="mdiDelete"></svg-icon>
         </div>
-  
       </v-container>
-      <v-icon :icon="`mdiSvg:${mdiPencil}`"></v-icon>
     </div>
     <div v-else class="text-center">
       No Tasks
@@ -37,12 +35,13 @@ import {
     mdiDelete,
     mdiPencil,
   } from '@mdi/js'
-
-console.log('pencil', mdiPencil)
-export default {
+import SvgIcon from '@jamescoyle/vue-icon';
+export default {components: {
+		SvgIcon
+	},
   setup() {
     const tasks = ref([]);
-    const error = ref(null); // Consider adding error handling
+    const error = ref(null); 
     const toast = useToast()
 
     const getTasks = async () => {
@@ -104,7 +103,7 @@ export default {
 
     await updateDoc(taskRef, {
       completed: newCompleted,
-      updatedTime: Date.now() // Update timestamp as well
+      updatedTime: Date.now() 
     });
 
     //  refetch tasks to reflect the update in the UI
@@ -125,6 +124,8 @@ export default {
         
       }
     }
+
+
 
     return { tasks, error, deleteTask, updateTaskCompletion,
     mdiDelete,

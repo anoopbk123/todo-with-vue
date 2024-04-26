@@ -11,39 +11,37 @@
             variant="solo-filled"
           ></v-text-field>
         </v-col>
-        <label><input v-model="taskCompleted" type="checkbox" /> Completed</label>
+        <label
+          ><input v-model="taskCompleted" type="checkbox" /> Completed</label
+        >
         <v-col cols="12" md="3">
           <v-btn color="warning" type="submit">Update Task</v-btn>
         </v-col>
       </v-row>
     </form>
-    <div>Task Creation Date: {{taskCreationDateAndTime}}</div>
-    <div>Last Updated: {{lastUpdatedDateAndTime}}</div>
+    <v-container v-if="taskData">
+      <div>Created at: {{ new Date(taskData.creationTime) }}</div>
+      <div v-if="taskData.updatedTime">Updated at: {{ new Date() }}</div>
+    </v-container>
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import { getDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../FireBaseConfig";
-import {useToast} from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-sugar.css';
+import { useToast } from "vue-toast-notification";
+import "vue-toast-notification/dist/theme-sugar.css";
 
 export default {
   setup() {
     const taskData = ref(null);
     const route = useRoute();
     const { taskID } = route.query;
-    const taskDescription = ref('');
+    const taskDescription = ref("");
     const taskCompleted = ref(false);
-    const toast = useToast()
-
-    const formatDate = (date) => {
-      // Implement your desired date formatting logic here
-      // You can use libraries like moment.js or built-in Date formatting methods
-      return new Date(date).toLocaleString();
-    };
+    const toast = useToast();
 
     const getTask = async () => {
       try {
@@ -59,13 +57,12 @@ export default {
             toast.error("Task document not found:", taskID);
           }
         }
-      }
-      catch (err) {
-        toast.error('Error fetching tasks',{
-          position:'top-right',
-          pauseOnHover:true,
-          duration: 2000
-        })
+      } catch (err) {
+        toast.error("Error fetching tasks", {
+          position: "top-right",
+          pauseOnHover: true,
+          duration: 2000,
+        });
         console.error("Error fetching tasks:", err);
       }
     };
@@ -79,11 +76,20 @@ export default {
             completed: taskCompleted.value,
             updatedTime: Date.now(), // Update timestamp
           });
-          console.log("Task updated successfully:");
+          await getTask();
+          toast.success("Task updated successfully:", {
+            position: "top-right",
+            pauseOnHover: true,
+            duration: 2000,
+          });
         }
       } catch (err) {
         console.error("Error updating task:", taskID, err);
-        // Handle errors (consider displaying to user)
+        toast.error("Error updating task", {
+            position: "top-right",
+            pauseOnHover: true,
+            duration: 2000,
+          });
       }
     };
 
@@ -91,11 +97,9 @@ export default {
       await getTask();
     });
 
-    return { taskData, taskDescription, taskCompleted, formatDate, submitForm };
+    return { taskData, taskDescription, taskCompleted, submitForm };
   },
 };
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
