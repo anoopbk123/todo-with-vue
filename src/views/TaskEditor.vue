@@ -20,8 +20,8 @@
       </v-row>
     </form>
     <v-container v-if="taskData">
-      <div>Created at: {{ new Date(taskData.creationTime) }}</div>
-      <div v-if="taskData.updatedTime">Updated at: {{ new Date() }}</div>
+      <div><span class="font-weight-bold">Created at: </span>{{ String(new Date(taskData.creationTime)).slice(0, -30)}}</div>
+      <div v-if="taskData.updatedTime"><span class="font-weight-bold">Last Updated at:</span> {{ String(new Date(taskData.updatedTime)).slice(0, -30) }}</div>
     </v-container>
   </div>
 </template>
