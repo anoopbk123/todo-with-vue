@@ -21,11 +21,11 @@
         <div
           :class="{ completed: completed }"
           @click="updateTaskCompletion(id)"
-          class="mx-2 cursor-pointer"
+          class="mx-2 cursor-pointer text-truncate"
         >
           {{ description }}
         </div>
-        <div>
+        <div class="text-no-wrap">
           <RouterLink class="mx-3" :to="'/editTask?taskID=' + id">
             <svg-icon type="mdi" :path="mdiPencil"></svg-icon>
           </RouterLink>
@@ -46,21 +46,20 @@ import { RouterLink } from "vue-router";
 import {
   collection,
   onSnapshot,
-  QuerySnapshot,
   doc,
   deleteDoc,
   updateDoc,
   getDoc,
 } from "firebase/firestore";
 import { db } from "../FireBaseConfig";
-import { onUnmounted, ref, onMounted, watch } from "vue";
+import { ref, onMounted, watchEffect } from "vue";
 import { useToast } from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-sugar.css";
 import { mdiDelete, mdiPencil } from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
 export default {
   components: {
-    SvgIcon,
+    SvgIcon,RouterLink
   },
   setup() {
     const tasks = ref([]);
@@ -131,11 +130,7 @@ export default {
           updatedTime: Date.now(),
         });
 
-        toast.success("Task completion updated!", {
-          position: "top-right",
-          pauseOnHover: true,
-          duration: 2000,
-        });
+        toast.success("Task completion updated!");
       } catch (err) {
         toast.error("Failed to update", {
           position: "top-right",
@@ -161,8 +156,7 @@ export default {
       });
     };
 
-    watch(tasks, filterTasks);
-    watch(filter, filterTasks);
+    watchEffect(filterTasks)
 
     return {
       tasks,
